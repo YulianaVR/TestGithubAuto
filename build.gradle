@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    cucumberRuntime {
+        extendsFrom testImplementation
+    }
+}
+
+dependencies {
+    implementation 'org.seleniumhq.selenium:selenium-java:4.2.1'
+    implementation 'io.cucumber:cucumber-java:7.3.3'
+    implementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
+    implementation 'com.aventstack:extentreports-cucumber4-adapter:1.2.1'
+    implementation 'com.aventstack:extentreports-cucumber3-adapter:1.0.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'io.cucumber:cucumber-junit:7.3.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task cucumber() {
+    dependsOn assemble, compileTestJava
+    doLast {
+        javaexec {
+            main = "io.cucumber.core.cli.Main"
+            classpath = configurations.cucumberRuntime + sourceSets.main.output + sourceSets.test.output
+            args = ['--plugin', 'html:reports/test-report', '--plugin', 'pretty', '--glue', 'com.hmtmcse.tutorial', 'src/test/resources']
+        }
+    }
+}
